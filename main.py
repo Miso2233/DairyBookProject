@@ -57,6 +57,16 @@ class DairyApp(ctk.CTk):
             )
             btn.pack(pady=5, padx=5) # 使用pack自动进行排列
 
+        # 右侧日记内容框架
+        self.content_frame = ctk.CTkFrame(master=self,corner_radius=0)
+        self.content_frame.grid(row=0, column=1, sticky="nsew")
+
+        # 日记标题
+
+        # 日记内容文本框
+
+
+
 if __name__ == "__main__":
     app = DairyApp()
     app.mainloop()
