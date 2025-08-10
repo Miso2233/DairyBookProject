@@ -27,7 +27,7 @@ class DairyApp(ctk.CTk):
 
         # 左侧日记列表框架
         self.sidebar_frame = ctk.CTkFrame(master=self, width=200, corner_radius=0) # 创建一个框架
-        self.sidebar_frame.grid(row=0, column=0, rowspan=1, sticky="nsew") # 绑定到左栏网格，并使之扩展
+        self.sidebar_frame.grid(row=0, column=0, rowspan=1, sticky="nsew") # 绑定到主体网格，并使之扩展
         self.sidebar_frame.grid_rowconfigure(0, weight=0) # 左栏设置0号行，无拉伸权
         self.sidebar_frame.grid_rowconfigure(1, weight=1) # 左栏设置1号行，全权
 
@@ -37,9 +37,13 @@ class DairyApp(ctk.CTk):
             text="所有笔记",
             font=ctk.CTkFont(size=20, weight="bold")
         ) # 构建左侧标题标签
-        self.sidebar_lable.grid(row=0, column=0, padx=20, pady=20)
+        self.sidebar_lable.grid(row=0, column=0, padx=20, pady=20) # 绑定到左栏网格，并设置大小
 
         # 笔记列表 (使用可滚动框架)
+        self.sidebar_list = ctk.CTkScrollableFrame(
+            master=self.sidebar_frame
+        ) # 构造左侧可滚动列表
+        self.sidebar_list.grid(row=1, column=0, padx=10, pady=(0,10), sticky="nsew") # 绑定到左栏网格，并设置大小
 
 if __name__ == "__main__":
     app = DairyApp()
