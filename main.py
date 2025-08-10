@@ -7,7 +7,7 @@ class DairyApp(ctk.CTk):
         super().__init__()
 
         # 模拟笔记数据
-        self.diaries = {
+        self.notes = {
             "2023-10-01": "今天是国庆节，天气晴朗，和家人一起去了公园...",
             "2023-10-05": "项目进展顺利，解决了几个关键的技术难题...",
             "2023-10-12": "读完了《百年孤独》，感触颇深...",
@@ -39,11 +39,23 @@ class DairyApp(ctk.CTk):
         ) # 构建左侧标题标签
         self.sidebar_lable.grid(row=0, column=0, padx=20, pady=20) # 绑定到左栏网格，并设置大小
 
-        # 笔记列表 (使用可滚动框架)
+        # 笔记列表框架 (使用可滚动框架)
         self.sidebar_list = ctk.CTkScrollableFrame(
             master=self.sidebar_frame
         ) # 构造左侧可滚动列表
         self.sidebar_list.grid(row=1, column=0, padx=10, pady=(0,10), sticky="nsew") # 绑定到左栏网格，并设置大小
+
+        # 构建按钮列表
+        for date in self.notes:
+            btn = ctk.CTkButton(
+                master=self.sidebar_list,
+                text=date,
+                width=180,
+                height=40,
+                anchor="w",
+                font=ctk.CTkFont(size=14)
+            )
+            btn.pack(pady=5, padx=5) # 使用pack自动进行排列
 
 if __name__ == "__main__":
     app = DairyApp()
