@@ -125,6 +125,7 @@ class DairyApp(ctk.CTk):
             width=100,
             height=40,
             text_color="#FFFFFF",
+            fg_color="#009666",
             font=ctk.CTkFont(family="微软雅黑", size=14, weight="normal"),
             command=self.save_note
         )
@@ -175,13 +176,9 @@ class DairyApp(ctk.CTk):
 
     def update_save_button(self):
         if self.text_modified.get():
-            self.save_button.configure(
-                fg_color="#009666"
-            )
+            AnimateTools.animate_button_color(self.save_button,target_color="#009666")
         else:
-            self.save_button.configure(
-                fg_color="#9E9F9E"
-            )            
+            AnimateTools.animate_button_color(self.save_button,target_color="#9E9F9E")           
     
     def show_note(self,index):
         assert index in self.notes
