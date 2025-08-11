@@ -163,8 +163,7 @@ class DairyApp(ctk.CTk):
         self.text_modified.trace_add("write", lambda *args: self.update_save_button()) # 对变量添加【写入】侦听
 
         self.update_save_button()
-        AnimateTools.animate_button_color(self.delete_button,target_color="#9E9F9E",steps=0)
-        AnimateTools.animate_button_color(self.optimize_button,target_color="#9E9F9E",steps=0) 
+        self.update_del_opti_button()
 
     def update_del_opti_button(self):
         if self.current_index.get():
@@ -193,12 +192,12 @@ class DairyApp(ctk.CTk):
         self.note_content.insert("1.0",self.notes[index]["content"]) # 修改内容
 
     def save_note(self):
-        if not self.current_index: 
+        if not self.current_index.get(): 
             return
         new_content = self.note_content.get("1.0","end")
-        self.notes[self.current_index]["content"] = new_content
+        self.notes[self.current_index.get()]["content"] = new_content
         new_title = self.note_title.get("1.0","end").strip()
-        self.notes[self.current_index]["metadata"]["title"] = new_title
+        self.notes[self.current_index.get()]["metadata"]["title"] = new_title
         self.button_list[self.current_index.get()].configure(text=new_title)
 
         with shelve.open("data/notes") as notes:
@@ -208,7 +207,10 @@ class DairyApp(ctk.CTk):
 
     def new_note(self):
         self.save_note()
-        new_index = max(self.notes.keys()) + 1
+        try:
+            new_index = max(self.notes.keys()) + 1
+        except ValueError:
+            new_index = 1001
         self.current_index.set(new_index)
         self.notes[new_index] = {
             'metadata': {
@@ -236,10 +238,10 @@ class DairyApp(ctk.CTk):
         self.show_note(new_index)
 
     def delete_note(self):
-        if not self.current_index:
+        if not self.current_index.get():
             return
         
-        del self.notes[self.current_index]
+        del self.notes[self.current_index.get()]
 
         with shelve.open("data/notes") as notes:
             notes["Miso"] = self.notes
@@ -247,7 +249,7 @@ class DairyApp(ctk.CTk):
         self.button_list[self.current_index.get()].destroy()
         del self.button_list[self.current_index.get()]
 
-        self.current_indexctk = ctk.IntVar(value=None)
+        self.current_index = ctk.IntVar(value=None)
         self.note_title.delete("1.0","end")
         self.note_content.delete("1.0","end")
         self.note_title.insert("1.0","👋Morning! | Select a note & get started!")
@@ -255,7 +257,7 @@ class DairyApp(ctk.CTk):
 
 
     def optimize_text(self):
-        if not self.current_index: 
+        if not self.current_index.get(): 
             return
         raw = self.note_content.get("1.0","end")
         raw_list = raw.split("\n")
@@ -274,10 +276,10 @@ class DairyApp(ctk.CTk):
 
     # 比较文本框更改
     def on_text_modified(self,event=None):
-        if not self.current_index:
+        if not self.current_index.get():
             return
         self.text_modified.set(
-            self.note_content.get("1.0","end") != self.notes[self.current_index]["content"] or self.note_title.get("1.0","end") != self.notes[self.current_index]["metadata"]["title"]
+            self.note_content.get("1.0","end") != self.notes[self.current_index.get()]["content"] or self.note_title.get("1.0","end") != self.notes[self.current_index.get()]["metadata"]["title"]
         )
 
 class AnimateTools:
@@ -312,7 +314,7 @@ class AnimateTools:
         current_step = [0]
         
         def update_color():
-            if current_step[0] < steps:
+            if current_step[0] <= steps:
                 # 计算当前颜色
                 current_rgb = [
                     start_rgb[i] + diff_rgb[i] * current_step[0]
