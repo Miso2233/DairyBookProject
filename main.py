@@ -26,7 +26,7 @@ class DairyApp(ctk.CTk):
         self.grid_columnconfigure(1,weight=1)   # 右栏，全权
 
         # 左侧日记列表框架
-        self.sidebar_frame = ctk.CTkFrame(master=self, width=200, corner_radius=0) # 创建一个框架
+        self.sidebar_frame = ctk.CTkFrame(master=self, width=200, corner_radius=0, fg_color="#C1EAFF") # 创建一个框架
         self.sidebar_frame.grid(row=0, column=0, rowspan=1, sticky="nsew") # 绑定到主体网格，并使之扩展
         self.sidebar_frame.grid_rowconfigure(0, weight=0) # 左栏设置0号行，无拉伸权
         self.sidebar_frame.grid_rowconfigure(1, weight=1) # 左栏设置1号行，全权
@@ -34,14 +34,15 @@ class DairyApp(ctk.CTk):
         # 左侧标题
         self.sidebar_lable = ctk.CTkLabel(
             master=self.sidebar_frame,
-            text="所有笔记",
-            font=ctk.CTkFont(size=20, weight="bold")
+            text="All Notes",
+            font=ctk.CTkFont(family="微软雅黑", size=20, weight="bold")
         ) # 构建左侧标题标签
         self.sidebar_lable.grid(row=0, column=0, padx=20, pady=20) # 绑定到左栏网格，并设置大小
 
         # 笔记列表框架 (使用可滚动框架)
         self.sidebar_list = ctk.CTkScrollableFrame(
-            master=self.sidebar_frame
+            master=self.sidebar_frame,
+            fg_color="#FFFFFF"
         ) # 构造左侧可滚动列表
         self.sidebar_list.grid(row=1, column=0, padx=10, pady=(0,10), sticky="nsew") # 绑定到左栏网格，并设置大小
 
@@ -49,7 +50,10 @@ class DairyApp(ctk.CTk):
         for date in self.notes:
             btn = ctk.CTkButton(
                 master=self.sidebar_list,
+                fg_color="#FFFFFF",
+                hover_color="#66CCFF",
                 text=date,
+                text_color="#000000",
                 width=180,
                 height=40,
                 anchor="w",
@@ -58,21 +62,27 @@ class DairyApp(ctk.CTk):
             btn.pack(pady=5, padx=5) # 使用pack自动进行排列
 
         # 右侧笔记内容框架
-        self.content_frame = ctk.CTkFrame(master=self,corner_radius=0)
+        self.content_frame = ctk.CTkFrame(master=self,corner_radius=0,fg_color="#FFFFFF")
         self.content_frame.grid(row=0, column=1, sticky="nsew") #绑定到右栏网格
         self.content_frame.grid_columnconfigure(0, weight=1)
         self.content_frame.grid_rowconfigure(1, weight=1) # 构建行与列
 
         # 笔记标题
-        self.notetitle = ctk.CTkLabel(
+        self.note_title = ctk.CTkLabel(
             self.content_frame,
-            text="选择一篇日记",
-            font=ctk.CTkFont(size=24, weight="bold")
+            text="👋Morning! | Select a note",
+            font=ctk.CTkFont(family="微软雅黑", size=24, weight="normal")
         )
-        self.notetitle.grid(row=0, column=0, padx=30, pady=30, sticky="w")
+        self.note_title.grid(row=0, column=0, padx=30, pady=30, sticky="w")
 
         # 日记内容文本框
-
+        self.note_content = ctk.CTkTextbox(
+            master=self.content_frame,
+            wrap="word",
+            font=ctk.CTkFont(family="微软雅黑", size=16),
+            state="disabled"  # 设置为只读
+        )
+        self.note_content.grid(row=1, column=0, sticky="nswe")
 
 
 if __name__ == "__main__":
