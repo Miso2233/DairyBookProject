@@ -84,6 +84,7 @@ class DairyApp(ctk.CTk):
         self.sidebar_list.grid(row=1, column=0, padx=10, pady=(0,10), sticky="nsew") # 绑定到左栏网格，并设置大小
 
         # 构建按钮列表
+        self.button_list:Dict[int,ctk.CTkButton] = {}
         for index in self.notes:
             btn = ctk.CTkButton(
                 master=self.sidebar_list,
@@ -98,6 +99,7 @@ class DairyApp(ctk.CTk):
                 command=lambda idx=index:self.show_note(idx)
             )
             btn.pack(pady=5, padx=5) # 使用pack自动进行排列
+            self.button_list[index] = btn
 
 
         # 右侧笔记内容框架
@@ -158,6 +160,7 @@ class DairyApp(ctk.CTk):
         self.notes[self.current_index]["content"] = new_content
         new_title = self.note_title.get("1.0","end").strip()
         self.notes[self.current_index]["metadata"]["title"] = new_title
+        self.button_list[self.current_index].configure(text=new_title)
 
 
 
