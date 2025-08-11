@@ -92,7 +92,8 @@ class DairyApp(ctk.CTk):
                 width=180,
                 height=40,
                 anchor="w",
-                font=ctk.CTkFont(family="微软雅黑", size=14)
+                font=ctk.CTkFont(family="微软雅黑", size=14),
+                command=lambda idx=index:self.show_diary(idx)
             )
             btn.pack(pady=5, padx=5) # 使用pack自动进行排列
 
@@ -118,6 +119,14 @@ class DairyApp(ctk.CTk):
             state="disabled"  # 设置为只读
         )
         self.note_content.grid(row=1, column=0, sticky="nswe")
+
+    def show_diary(self,index):
+        assert index in self.notes
+        self.note_title.configure(text=self.notes[index]["metadata"]["title"]) # 修改标题
+        self.note_content.configure(state="normal")
+        self.note_content.delete("1.0","end")
+        self.note_content.insert("1.0",self.notes[index]["content"])
+        self.note_content.configure(state="disabled")
 
 
 if __name__ == "__main__":
