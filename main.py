@@ -128,7 +128,8 @@ class DairyApp(ctk.CTk):
             font=ctk.CTkFont(family="微软雅黑", size=16),
             state="normal"
         )
-        self.note_content.grid(row=1, column=0, sticky="nswe")
+        self.note_content.grid(row=1, column=0, sticky="nswe", padx=30, pady=10)
+        self.note_content.bind("<KeyRelease>",command=self.on_text_modified) # 每次键盘输入触发一次比较函数，可能触发self.text_modified的写入
 
         # 编辑栏按钮
         self.button_frame = ctk.CTkFrame(
@@ -163,6 +164,23 @@ class DairyApp(ctk.CTk):
 
         self.current_index = None
 
+        self.text_modified = ctk.BooleanVar(value=False)
+        self.text_modified.trace_add("write", lambda *args: self.update_save_button()) # 对变量添加【写入】侦听
+
+        self.update_save_button()
+
+
+    def update_save_button(self):
+        if self.text_modified.get():
+            self.save_button.configure(
+                fg_color="#1F883D"
+            )
+        else:
+            self.save_button.configure(
+                fg_color="#9E9F9E"
+            )            
+    
+    
     def show_note(self,index):
         assert index in self.notes
         self.current_index = index
@@ -180,6 +198,8 @@ class DairyApp(ctk.CTk):
         self.notes[self.current_index]["metadata"]["title"] = new_title
         self.button_list[self.current_index].configure(text=new_title)
 
+        self.text_modified.set(False)
+
     def optimize_text(self):
         if not self.current_index: 
             return
@@ -187,14 +207,24 @@ class DairyApp(ctk.CTk):
         raw_list = raw.split("\n")
         indent_list = []
         for line in raw_list:
-            if line.startswith("\t"):
+            if line.startswith("    "):
                 indent_list.append(line)
             elif line != "":
-                indent_list.append("\t"+line)
+                indent_list.append("    "+line)
         output_txt = "\n" + "\n\n".join(indent_list)
 
         self.note_content.delete("1.0","end")
         self.note_content.insert("1.0",output_txt)
+
+        self.on_text_modified() # 触发一次文本比较函数
+
+    # 比较文本框更改
+    def on_text_modified(self,event=None):
+        if not self.current_index:
+            return
+        self.text_modified.set(
+            self.note_content.get("1.0","end") != self.notes[self.current_index]
+        )
 
 
 if __name__ == "__main__":
