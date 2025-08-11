@@ -57,11 +57,19 @@ class DairyApp(ctk.CTk):
             )
             btn.pack(pady=5, padx=5) # 使用pack自动进行排列
 
-        # 右侧日记内容框架
+        # 右侧笔记内容框架
         self.content_frame = ctk.CTkFrame(master=self,corner_radius=0)
-        self.content_frame.grid(row=0, column=1, sticky="nsew")
+        self.content_frame.grid(row=0, column=1, sticky="nsew") #绑定到右栏网格
+        self.content_frame.grid_columnconfigure(0, weight=1)
+        self.content_frame.grid_rowconfigure(1, weight=1) # 构建行与列
 
-        # 日记标题
+        # 笔记标题
+        self.notetitle = ctk.CTkLabel(
+            self.content_frame,
+            text="选择一篇日记",
+            font=ctk.CTkFont(size=24, weight="bold")
+        )
+        self.notetitle.grid(row=0, column=0, padx=30, pady=30, sticky="w")
 
         # 日记内容文本框
 
