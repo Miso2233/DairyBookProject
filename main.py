@@ -8,11 +8,46 @@ class DairyApp(ctk.CTk):
 
         # 模拟笔记数据
         self.notes = {
-            "2023-10-01": "今天是国庆节，天气晴朗，和家人一起去了公园...",
-            "2023-10-05": "项目进展顺利，解决了几个关键的技术难题...",
-            "2023-10-12": "读完了《百年孤独》，感触颇深...",
-            "2023-10-18": "尝试了新的菜谱，味道还不错...",
-            "2023-10-25": "参加了技术分享会，学到了很多新知识..."
+            1001: {
+                "metadata": {
+                    "title": "国庆日记",
+                    "date": "2023-10-01",
+                    "tags": ["家庭", "假日"]
+                },
+                "content": "今天是国庆节，天气晴朗，和家人一起去了公园..."
+            },
+            1002: {
+                "metadata": {
+                    "title": "项目进展报告",
+                    "date": "2023-10-05",
+                    "tags": ["工作", "技术"]
+                },
+                "content": "项目进展顺利，解决了几个关键的技术难题..."
+            },
+            1003: {
+                "metadata": {
+                    "title": "读书笔记",
+                    "date": "2023-10-12",
+                    "tags": ["阅读", "文学"]
+                },
+                "content": "读完了《百年孤独》，感触颇深..."
+            },
+            1004: {
+                "metadata": {
+                    "title": "烹饪实验",
+                    "date": "2023-10-18",
+                    "tags": ["美食", "生活"]
+                },
+                "content": "尝试了新的菜谱，味道还不错..."
+            },
+            1005: {
+                "metadata": {
+                    "title": "技术分享会总结",
+                    "date": "2023-10-25",
+                    "tags": ["学习", "技术"]
+                },
+                "content": "参加了技术分享会，学到了很多新知识..."
+            }
         }
 
         # 设置窗口
@@ -47,17 +82,17 @@ class DairyApp(ctk.CTk):
         self.sidebar_list.grid(row=1, column=0, padx=10, pady=(0,10), sticky="nsew") # 绑定到左栏网格，并设置大小
 
         # 构建按钮列表
-        for date in self.notes:
+        for index in self.notes:
             btn = ctk.CTkButton(
                 master=self.sidebar_list,
                 fg_color="#FFFFFF",
                 hover_color="#66CCFF",
-                text=date,
+                text=self.notes[index]["metadata"]["title"],
                 text_color="#000000",
                 width=180,
                 height=40,
                 anchor="w",
-                font=ctk.CTkFont(size=14)
+                font=ctk.CTkFont(family="微软雅黑", size=14)
             )
             btn.pack(pady=5, padx=5) # 使用pack自动进行排列
 
