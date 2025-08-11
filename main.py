@@ -142,27 +142,50 @@ class DairyApp(ctk.CTk):
         )
         self.optimize_button.pack(side="right", padx=(10, 0))
 
-        self.current_index = None
+        self.delete_button = ctk.CTkButton(
+            master=self.button_frame,
+            text="删除笔记",
+            width=100,
+            height=40,
+            text_color="#FFFFFF",
+            fg_color="#009666", # 按钮颜色 删除
+            hover=False,
+            font=ctk.CTkFont(family="微软雅黑", size=14, weight="normal"),
+            command=self.delete_note
+        )
+        self.delete_button.pack(side="right", padx=(10, 0))
+        self.delete_button.bind("<Enter>",lambda e: AnimateTools.animate_button_color(self.delete_button,"#EE0000"))
+        self.delete_button.bind("<Leave>",lambda e: AnimateTools.animate_button_color(self.delete_button,"#009666"))
 
+        self.current_index = ctk.IntVar(value=None)
+        self.current_index.trace_add("write", lambda *args: self.update_del_opti_button())
         self.text_modified = ctk.BooleanVar(value=False)
         self.text_modified.trace_add("write", lambda *args: self.update_save_button()) # 对变量添加【写入】侦听
 
         self.update_save_button()
+        self.update_del_opti_button()
 
+    def update_del_opti_button(self):
+        if self.current_index.get():
+            AnimateTools.animate_button_color(self.delete_button,target_color="#009666")
+            AnimateTools.animate_button_color(self.optimize_button,target_color="#009666")
+        else:
+            AnimateTools.animate_button_color(self.delete_button,target_color="#9E9F9E")
+            AnimateTools.animate_button_color(self.optimize_button,target_color="#9E9F9E") 
 
     def update_save_button(self):
         if self.text_modified.get():
             self.save_button.configure(
-                fg_color="#009666" # 按钮颜色 保存 激活
+                fg_color="#009666"
             )
         else:
             self.save_button.configure(
-                fg_color="#9E9F9E" # 按钮颜色 保存 未激活
+                fg_color="#9E9F9E"
             )            
     
     def show_note(self,index):
         assert index in self.notes
-        self.current_index = index
+        self.current_index.set(index)
         self.note_title.delete("1.0","end")
         self.note_title.insert("1.0",self.notes[index]["metadata"]["title"])# 修改标题
         self.note_content.delete("1.0","end")
@@ -175,7 +198,7 @@ class DairyApp(ctk.CTk):
         self.notes[self.current_index]["content"] = new_content
         new_title = self.note_title.get("1.0","end").strip()
         self.notes[self.current_index]["metadata"]["title"] = new_title
-        self.button_list[self.current_index].configure(text=new_title)
+        self.button_list[self.current_index.get()].configure(text=new_title)
 
         with shelve.open("data/notes") as notes:
             notes["Miso"] = self.notes
@@ -185,7 +208,7 @@ class DairyApp(ctk.CTk):
     def new_note(self):
         self.save_note()
         new_index = max(self.notes.keys()) + 1
-        self.current_index = new_index
+        self.current_index.set(new_index)
         self.notes[new_index] = {
             'metadata': {
                 'title': '新的笔记',
@@ -210,6 +233,24 @@ class DairyApp(ctk.CTk):
         btn.pack(pady=5, padx=5) # 使用pack自动进行排列
         self.text_modified.set(False)
         self.show_note(new_index)
+
+    def delete_note(self):
+        if not self.current_index:
+            return
+        
+        del self.notes[self.current_index]
+
+        with shelve.open("data/notes") as notes:
+            notes["Miso"] = self.notes
+
+        self.button_list[self.current_index.get()].destroy()
+        del self.button_list[self.current_index.get()]
+
+        self.current_indexctk = ctk.IntVar(value=None)
+        self.note_title.delete("1.0","end")
+        self.note_content.delete("1.0","end")
+        self.note_title.insert("1.0","👋Morning! | Select a note & get started!")
+
 
 
     def optimize_text(self):
@@ -242,7 +283,7 @@ class AnimateTools:
 
     # 颜色转换函数
     @staticmethod
-    def hex_to_rgb(hex_color):
+    def hex_to_rgb(hex_color:str) -> tuple[int, ...]:
         hex_color = hex_color.lstrip('#')
         return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
     
@@ -250,10 +291,40 @@ class AnimateTools:
     def rgb_to_hex(rgb):
         return f'#{int(rgb[0]):02x}{int(rgb[1]):02x}{int(rgb[2]):02x}'
     
-    
+    @staticmethod
+    def animate_button_color(button:ctk.CTkButton, target_color:str, steps=10, delay=10):
+        current_color = button.cget("fg_color") or "#2b2b2b"
+
+        start_rgb = AnimateTools.hex_to_rgb(current_color)
+        target_rgb = AnimateTools.hex_to_rgb(target_color)
+
+        diff_rgb = [
+            (target_rgb[i] - start_rgb[i]) / steps
+            for i in range(3)
+        ]
+
+        # 动画步骤计数器
+        current_step = [0]
+        
+        def update_color():
+            if current_step[0] < steps:
+                # 计算当前颜色
+                current_rgb = [
+                    start_rgb[i] + diff_rgb[i] * current_step[0]
+                    for i in range(3)
+                ]
+                hex_color = AnimateTools.rgb_to_hex(current_rgb)
+                
+                # 更新按钮颜色
+                button.configure(fg_color=hex_color)
+                
+                # 增加步数并安排下一次更新
+                current_step[0] += 1
+                button.after(delay, update_color)
+        
+        update_color()
 
 
 if __name__ == "__main__":
     app = DairyApp()
-    print(app.notes)
     app.mainloop()
