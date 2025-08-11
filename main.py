@@ -131,8 +131,14 @@ class DairyApp(ctk.CTk):
         self.note_content.grid(row=1, column=0, sticky="nswe")
 
         # 编辑栏按钮
-        self.save_button = ctk.CTkButton(
+        self.button_frame = ctk.CTkFrame(
             master=self.content_frame,
+            fg_color="#FFFFFF"
+        )
+        self.button_frame.grid(row=2, padx=30, pady=20, sticky="we")
+
+        self.save_button = ctk.CTkButton(
+            master=self.button_frame,
             text="Save",
             width=100,
             height=40,
@@ -141,7 +147,19 @@ class DairyApp(ctk.CTk):
             font=ctk.CTkFont(family="微软雅黑", size=14, weight="normal"),
             command=self.save_note
         )
-        self.save_button.grid(row=2, padx=30, pady=20, sticky="e")
+        self.save_button.pack(side="right", padx=(10, 0))
+
+        self.optimize_button = ctk.CTkButton(
+            master=self.button_frame,
+            text="Optimize",
+            width=100,
+            height=40,
+            text_color="#FFFFFF",
+            fg_color="#1F883D",
+            font=ctk.CTkFont(family="微软雅黑", size=14, weight="normal"),
+            command=self.optimize_text
+        )
+        self.optimize_button.pack(side="right", padx=(10, 0))
 
         self.current_index = None
 
@@ -162,6 +180,21 @@ class DairyApp(ctk.CTk):
         self.notes[self.current_index]["metadata"]["title"] = new_title
         self.button_list[self.current_index].configure(text=new_title)
 
+    def optimize_text(self):
+        if not self.current_index: 
+            return
+        raw = self.note_content.get("1.0","end")
+        raw_list = raw.split("\n")
+        indent_list = []
+        for line in raw_list:
+            if line.startswith("\t"):
+                indent_list.append(line)
+            else:
+                indent_list.append("\t"+line)
+        output_txt = "\n" + "\n\n".join(indent_list)
+
+        self.note_content.delete("1.0","end")
+        self.note_content.insert("1.0",output_txt)
 
 
 if __name__ == "__main__":
