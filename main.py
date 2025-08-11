@@ -96,7 +96,7 @@ class DairyApp(ctk.CTk):
                 height=40,
                 anchor="w",
                 font=ctk.CTkFont(family="微软雅黑", size=14),
-                command=lambda idx=index:self.show_note(idx)
+                command=lambda idx=index:[self.show_note(idx),self.text_modified.set(False)]
             )
             btn.pack(pady=5, padx=5) # 使用pack自动进行排列
             self.button_list[index] = btn
@@ -120,6 +120,7 @@ class DairyApp(ctk.CTk):
         )
         self.note_title.insert("1.0","👋Morning! | Select a note & get started!")
         self.note_title.grid(row=0, column=0, padx=30, pady=30, sticky="we")
+        self.note_title.bind("<KeyRelease>",command=self.on_text_modified)
 
         # 笔记内容文本框
         self.note_content = ctk.CTkTextbox(
@@ -223,7 +224,7 @@ class DairyApp(ctk.CTk):
         if not self.current_index:
             return
         self.text_modified.set(
-            self.note_content.get("1.0","end") != self.notes[self.current_index]
+            self.note_content.get("1.0","end") != self.notes[self.current_index] or self.note_title.get("1.0","end") != self.notes[self.current_index]["metadata"]["title"]
         )
 
 
