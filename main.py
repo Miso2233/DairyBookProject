@@ -1,4 +1,6 @@
-from typing import Any, Dict
+import os
+import shelve
+from typing import Dict
 
 import customtkinter as ctk
 
@@ -8,49 +10,12 @@ class DairyApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        # 模拟笔记数据
-        self.notes: Dict[int, Dict[str, Any]] = {
-            1001: {
-                "metadata": {
-                    "title": "国庆日记",
-                    "date": "2023-10-01",
-                    "tags": ["家庭", "假日"]
-                },
-                "content": "今天是国庆节，天气晴朗，和家人一起去了公园..."
-            },
-            1002: {
-                "metadata": {
-                    "title": "项目进展报告",
-                    "date": "2023-10-05",
-                    "tags": ["工作", "技术"]
-                },
-                "content": "项目进展顺利，解决了几个关键的技术难题..."
-            },
-            1003: {
-                "metadata": {
-                    "title": "读书笔记",
-                    "date": "2023-10-12",
-                    "tags": ["阅读", "文学"]
-                },
-                "content": "读完了《百年孤独》，感触颇深..."
-            },
-            1004: {
-                "metadata": {
-                    "title": "烹饪实验",
-                    "date": "2023-10-18",
-                    "tags": ["美食", "生活"]
-                },
-                "content": "尝试了新的菜谱，味道还不错..."
-            },
-            1005: {
-                "metadata": {
-                    "title": "技术分享会总结",
-                    "date": "2023-10-25",
-                    "tags": ["学习", "技术"]
-                },
-                "content": "参加了技术分享会，学到了很多新知识..."
-            }
-        }
+        # 初始化本地存档
+        os.makedirs("data", exist_ok=True)
+
+        # 读取笔记数据
+        with shelve.open("data/notes") as notes:
+            self.notes = notes.get("Miso",{})
 
         # 设置窗口
         self.title("My Notebook")
@@ -198,6 +163,9 @@ class DairyApp(ctk.CTk):
         new_title = self.note_title.get("1.0","end").strip()
         self.notes[self.current_index]["metadata"]["title"] = new_title
         self.button_list[self.current_index].configure(text=new_title)
+
+        with shelve.open("data/notes") as notes:
+            notes["Miso"] = self.notes
 
         self.text_modified.set(False)
 
