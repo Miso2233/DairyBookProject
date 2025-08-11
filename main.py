@@ -189,7 +189,7 @@ class DairyApp(ctk.CTk):
         for line in raw_list:
             if line.startswith("\t"):
                 indent_list.append(line)
-            else:
+            elif line != "":
                 indent_list.append("\t"+line)
         output_txt = "\n" + "\n\n".join(indent_list)
 
