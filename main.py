@@ -182,6 +182,11 @@ class DairyApp(ctk.CTk):
     
     def show_note(self,index):
         assert index in self.notes
+
+        for button in self.button_list.values():
+            button.configure(fg_color="#FFFFFF")
+        self.button_list[index].configure(fg_color="#66CCFF")
+        
         self.current_index.set(index)
         self.note_title.delete("1.0","end")
         self.note_title.insert("1.0",self.notes[index]["metadata"]["title"])# 修改标题
