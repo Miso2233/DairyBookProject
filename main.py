@@ -155,7 +155,7 @@ class DairyApp(ctk.CTk):
         )
         self.delete_button.pack(side="right", padx=(10, 0))
         self.delete_button.bind("<Enter>",lambda e: AnimateTools.animate_button_color(self.delete_button,"#EE0000"))
-        self.delete_button.bind("<Leave>",lambda e: AnimateTools.animate_button_color(self.delete_button,"#009666"))
+        self.delete_button.bind("<Leave>",lambda e: self.update_del_opti_button())
 
         self.current_index = ctk.IntVar(value=None)
         self.current_index.trace_add("write", lambda *args: self.update_del_opti_button())
@@ -163,7 +163,8 @@ class DairyApp(ctk.CTk):
         self.text_modified.trace_add("write", lambda *args: self.update_save_button()) # 对变量添加【写入】侦听
 
         self.update_save_button()
-        self.update_del_opti_button()
+        AnimateTools.animate_button_color(self.delete_button,target_color="#9E9F9E",steps=0)
+        AnimateTools.animate_button_color(self.optimize_button,target_color="#9E9F9E",steps=0) 
 
     def update_del_opti_button(self):
         if self.current_index.get():
@@ -293,6 +294,10 @@ class AnimateTools:
     
     @staticmethod
     def animate_button_color(button:ctk.CTkButton, target_color:str, steps=10, delay=10):
+        if steps == 0:
+            button.configure(fg_color=target_color)
+            return
+
         current_color = button.cget("fg_color") or "#2b2b2b"
 
         start_rgb = AnimateTools.hex_to_rgb(current_color)
